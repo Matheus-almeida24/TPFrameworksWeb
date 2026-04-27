@@ -1,0 +1,17 @@
+# Pastas de dependências (MUITO IMPORTANTE)
+node_modules/
+**/node_modules/
+
+# Pastas de build
+dist/
+tmp/
+out-tsc/
+
+# Pastas específicas do Angular e VS Code
+.angular/
+.vscode/
+
+# Arquivos de sistema e logs
+.DS_Store
+Thumbs.db
+npm-debug.log*

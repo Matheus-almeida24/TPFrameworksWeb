@@ -1,86 +1,37 @@
-// Importa o framework Express, usado para criar o servidor web
 const express = require('express');
+const cors = require('cors'); // Instale com: npm install cors
+const mongoose = require('mongoose');
 
-// Cria a aplicação servidor
 const app = express();
 
-// Middleware global
-// Ele será executado em todas as requisições recebidas pelo servidor
-app.use((req, res, next) => {
+// 1. Configuração do CORS (Melhorada)
+// Usar a biblioteca 'cors' é mais seguro e trata requisições tipo OPTIONS automaticamente
+app.use(cors());
 
-    // Permite que qualquer origem acesse a API
-    // Isso libera o CORS para todos os domínios
-    res.setHeader("Access-Control-Allow-Origin", "*");
-
-    // Define quais métodos HTTP podem ser usados nas requisições
-    res.setHeader('Access-Control-Allow-Methods', 'HEAD, GET, POST, PATCH, DELETE');
-
-    // Define quais cabeçalhos podem ser enviados pelo cliente
-    res.header(
-        "Access-Control-Allow-Headers",
-        "Origin, X-Requested-With, Content-Type, Accept"
-    );
-
-    // Manda a execução continuar para o próximo middleware ou rota
-    next();
-});
-
-// Middleware do Express que converte automaticamente o corpo da requisição em JSON
-// Exemplo: se o cliente enviar {"nome":"Thiago"}, isso ficará disponível em req.body
 app.use(express.json());
 
-// Define a porta do servidor
-// Primeiro tenta usar a variável de ambiente PORT
-// Se ela não existir, usa a porta 3000
+// 2. Configuração da Porta
 const PORT = process.env.PORT || 3000;
 
-// Importa o arquivo de rotas localizado em "./routes/routes"
-// Esse arquivo deve exportar um Router do Express (module.exports = router)
-// Ou seja, aqui você está trazendo todas as rotas definidas naquele arquivo
-const routes = require('./routes/routes');
+// 3. Conexão com o MongoDB (Ajustada para Variável de Ambiente)
+// No Render, vamos criar uma variável chamada MONGODB_URI
+const mongoURL = process.env.MONGODB_URI; 
 
-// Registra as rotas no servidor principal (app)
-// O prefixo '/api' será automaticamente adicionado a todas as rotas do router
-// Exemplo:
-// Se no router tiver: router.get('/tarefas')
-// A rota final será: http://localhost:3000/api/tarefas
-app.use('/api', routes);
+if (!mongoURL) {
+    console.error("ERRO: A variável MONGODB_URI não foi definida!");
+}
 
-// Inicia o servidor na porta definida
-app.listen(PORT, () => {
-    console.log(`Server Started at ${PORT}`);
-});
+mongoose.connect(mongoURL)
+    .then(() => console.log('Database Connected'))
+    .catch((error) => console.log('Erro ao conectar no banco:', error));
 
-// Obtendo os parâmetros passados pela linha de comando
-// process.argv contém tudo que foi digitado ao executar o programa
-// slice(2) ignora:
-// [0] caminho do node
-// [1] caminho do arquivo js
-// e pega apenas os argumentos passados pelo usuário
-var userArgs = process.argv.slice(2);
-
-// Pega o primeiro argumento informado na linha de comando
-// Aqui espera-se que seja a URL de conexão com o MongoDB
-var mongoURL = userArgs[0];
-
-// Importa o Mongoose, biblioteca usada para conectar e modelar dados no MongoDB
-var mongoose = require('mongoose');
-
-// Faz a conexão com o MongoDB usando a URL recebida por argumento
-mongoose.connect(mongoURL);
-
-// Define que o Mongoose vai usar as Promises nativas do JavaScript
 mongoose.Promise = global.Promise;
 
-// Obtém o objeto de conexão do Mongoose
-const db = mongoose.connection;
+// 4. Rotas
+const routes = require('./routes/routes');
+app.use('/api', routes);
 
-// Evento disparado se ocorrer erro na conexão com o banco
-db.on('error', (error) => {
-    console.log(error);
-});
-
-// Evento disparado uma única vez quando a conexão for estabelecida com sucesso
-db.once('connected', () => {
-    console.log('Database Connected');
+// 5. Início do Servidor
+app.listen(PORT, () => {
+    console.log(`Server Started at ${PORT}`);
 });
