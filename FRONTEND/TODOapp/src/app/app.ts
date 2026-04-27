@@ -14,31 +14,31 @@ export class App {
   apiURL: string;
 
   constructor(private http: HttpClient) {
-    // Definimos apenas a base aqui
+    // 1. Colocamos o /api aqui UMA VEZ SÓ
     this.apiURL = 'https://tpframeworksweb.onrender.com/api';
     this.READ_tarefas();
   }
 
   CREATE_tarefa(descricaoNovaTarefa: string) {
     const novaTarefa = new Tarefa(descricaoNovaTarefa, false);
-    // Como a apiURL já tem "/api", aqui usamos apenas "/post"
+    // 2. Agora usamos apenas o caminho final (/post, /getAll, etc)
     this.http.post<Tarefa>(`${this.apiURL}/post`, novaTarefa).subscribe(
       resultado => { this.READ_tarefas(); }
     );
   }
 
   READ_tarefas() {
+    // Corrigido: agora vai chamar .../api/getAll
     this.http.get<Tarefa[]>(`${this.apiURL}/getAll`).subscribe(
       resultado => this.arrayDeTarefas.set(resultado)
     );
   }
 
   DELETE_tarefa(tarefaAserRemovida: Tarefa) {
-    // ATENÇÃO: É indexOf com "O" maiúsculo
     const indice = this.arrayDeTarefas().indexOf(tarefaAserRemovida);
-    
     if (indice !== -1) {
       const id = this.arrayDeTarefas()[indice]._id;
+      // Corrigido: agora vai chamar .../api/delete/ID
       this.http.delete<Tarefa>(`${this.apiURL}/delete/${id}`).subscribe(
         resultado => { this.READ_tarefas(); }
       );
@@ -49,6 +49,7 @@ export class App {
     const indice = this.arrayDeTarefas().indexOf(tarefaAserModificada);
     if (indice !== -1) {
        const id = this.arrayDeTarefas()[indice]._id;
+       // Corrigido: agora vai chamar .../api/update/ID
        this.http.patch<Tarefa>(`${this.apiURL}/update/${id}`, tarefaAserModificada).subscribe(
          resultado => { this.READ_tarefas(); }
        );
