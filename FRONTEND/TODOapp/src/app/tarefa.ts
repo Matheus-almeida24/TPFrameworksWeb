@@ -1,4 +1,5 @@
 export class Tarefa {
+    _id?: string;
     descricao: string;
     statusRealizada: boolean;
     constructor(_descricao: string, _statusRealizada: boolean) {
