@@ -1,0 +1,16 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index 'mongodb+srv://matheus250779:hs9yw3ppmfb@cluster0.0mdh1qq.mongodb.net/tarefasDB?appName=Cluster0'"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^5.2.1",
+    "mongoose": "^9.3.2"
+  }
+}
